@@ -25,6 +25,7 @@ public class JobsController extends BaseController {
                                    @RequestParam("sFilter") String sFilter) {
         String output = "";
         //changes made in firstBranch
+        //changes made in master 
         try {
             String sortingOrders = SortAndFilterJobs.sortJobs(sSort);
             String filteringBy = SortAndFilterJobs.filterJobs(sFilter);
