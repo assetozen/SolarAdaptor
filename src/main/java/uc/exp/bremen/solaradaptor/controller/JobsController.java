@@ -14,7 +14,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
 @Controller
 public class JobsController extends BaseController {
@@ -25,6 +24,7 @@ public class JobsController extends BaseController {
                                    @RequestParam("sSort") String sSort,
                                    @RequestParam("sFilter") String sFilter) {
         String output = "";
+        //changes made in firstBranch
         try {
             String sortingOrders = SortAndFilterJobs.sortJobs(sSort);
             String filteringBy = SortAndFilterJobs.filterJobs(sFilter);
