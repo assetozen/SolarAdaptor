@@ -1,10 +1,13 @@
 package uc.exp.bremen.solaradaptor.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import uc.exp.bremen.solaradaptor.service.InitSolarService;
+import uc.exp.bremen.solaradaptor.service.SetUpConWithSolarAndReadContentService;
 import uc.exp.bremen.solaradaptor.utility.Constants;
 import uc.exp.bremen.solaradaptor.utility.SortAndFilterJobs;
 
@@ -18,26 +21,25 @@ import java.net.URL;
 @Controller
 public class JobsController extends BaseController {
 
+    @Autowired
+    InitSolarService initSolarService;
+
+    @Autowired
+    SetUpConWithSolarAndReadContentService setUpConWithSolarAndReadContentService;
+
+
     @GetMapping(value = "/jobs", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public String getJobsFromSolar(@RequestParam("sSearch") String sSearch,
                                    @RequestParam("sSort") String sSort,
                                    @RequestParam("sFilter") String sFilter) {
         String output = "";
+        String readLine;
         try {
-            String sortingOrders = SortAndFilterJobs.sortJobs(sSort);
-            String filteringBy = SortAndFilterJobs.filterJobs(sFilter);
-            URL url = new URL(Constants.PREFIX_URL  + sSearch + filteringBy + sortingOrders + Constants.WRITER_TYPE + Constants.INDENTATION);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Accept", "application/json");
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(
-                    (conn.getInputStream())));
-
-            String readline;
-            while ((readline = br.readLine()) != null) {
-                output = output.concat(readline);
+            URL solarUrl = initSolarService.initSolarUrl(sSearch, sSort, sFilter);
+            BufferedReader bufferedReader = setUpConWithSolarAndReadContentService.doSetUpConnectionWithSolarAndReadData(solarUrl);
+            while ((readLine = bufferedReader.readLine()) != null) {
+                output = output.concat(readLine);
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
